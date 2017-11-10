@@ -14,7 +14,7 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-var types = "div, input, label, em, td, tr, span, a, p, h1, h2, h3";
+var types = "div:not(.tipsy):not(.tipsy-inner):not(.tipsy-arrow), input, label, em, td, tr, span, a, p, h1, h2, h3";
 $(types).on("dblclick", tipsyOn);
 
 function tipsyOn(e) {
@@ -24,25 +24,26 @@ function tipsyOn(e) {
     var target = $(e.currentTarget),
         tText = "";
 
-    if (window.getSelection) {
-        tText = window.getSelection().toString();
-    } else if (document.selection && document.selection.type != "Control") {
-        tText = document.selection.createRange().text;
-    }
+    // if (window.getSelection) {
+    //     tText = window.getSelection().toString();
+    // } else if (document.selection && document.selection.type != "Control") {
+    //     tText = document.selection.createRange().text;
+    // }
+
+    tText = target.css("font-family");
+
+    console.log(target, tText);
 
     target.tipsy("hide").unbind().data("tipsy", "");
-
-    console.log(tText);
-
     target.tipsy({
         gravity: "n",
         html: true,
         fallback: tText,
         trigger: "manual"
     });
-
     target.tipsy("show");
-    $(".tipsy").css("top", e.pageY).css("left", e.pageX);
+
+    $(".tipsy").css("top", e.pageY + 15).css("left", e.pageX - ($(".tipsy").width() / 2));
 
     setTimeout(function(){
         $(types).on("click", function(e) {
