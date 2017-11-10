@@ -11,7 +11,7 @@
                 "<all_urls>"
             ],
             "js": ["jquery.js", "jquery.tipsy.js", "content.js"],
-            "css": ["tipsy.css"]
+            "css": ["tipsy.css", "stealer.css"]
         }
     ],
     "browser_action": {
