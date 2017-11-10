@@ -1,6 +1,3 @@
-// content.js
-
-
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if( request.message === "clicked_browser_action" ) {
@@ -18,37 +15,41 @@ chrome.runtime.onMessage.addListener(
 );
 
 var types = "div, input, label, em, td, tr, span, a, p, h1, h2, h3";
-tipsyOn();
+$(types).on("mouseup", tipsyOn);
 
-function tipsyOn() {
-    $(types).on("mouseup", function(e) {
-        e.stopImmediatePropagation();
-        var target = $(e.currentTarget),
-            tText = "";
+function tipsyOn(e) {
+    console.log("now");
+    e.stopImmediatePropagation();
+    $(types).off("mouseup", tipsyOn);
 
-        if (window.getSelection) {
-            tText = window.getSelection().toString();
-        } else if (document.selection && document.selection.type != "Control") {
-            tText = document.selection.createRange().text;
-        }
-        target.tipsy({
-            gravity: "n",
-            html: true,
-            fallback: tText,
-            trigger: "manual"
-        });
+    var target = $(e.currentTarget),
+        tText = "";
 
-        target.tipsy("show");
-
-        setTimeout(function() {
-            $(types).on("click", function() {
-                tipsyOff(target);
-            });
-        }, 500);
+    if (window.getSelection) {
+        tText = window.getSelection().toString();
+    } else if (document.selection && document.selection.type != "Control") {
+        tText = document.selection.createRange().text;
+    }
+    target.tipsy({
+        gravity: "n",
+        html: true,
+        fallback: tText,
+        trigger: "manual"
     });
+
+    target.tipsy("show");
+
+    setTimeout(function(){
+        $(types).on("click", tipsyOff);
+    }, 175);
 }
 
-function tipsyOff(target) {
-    target.tipsy("hide").unbind().data("tipsy", "");
-    tipsyOn();
+function tipsyOff(e) {
+    e.stopImmediatePropagation();
+    $(types).off("click", tipsyOff);
+    $(".tipsy").remove();
+    setTimeout(function() {
+        console.log("off");
+        $(types).off("mouseup").on("mouseup", tipsyOn);
+    }, 175);
 }
