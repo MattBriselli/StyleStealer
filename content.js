@@ -15,12 +15,11 @@ chrome.runtime.onMessage.addListener(
 );
 
 var types = "div, input, label, em, td, tr, span, a, p, h1, h2, h3";
-$(types).on("mouseup", tipsyOn);
+$(types).on("dblclick", tipsyOn);
 
 function tipsyOn(e) {
-    console.log("now");
     e.stopImmediatePropagation();
-    $(types).off("mouseup", tipsyOn);
+    $(types).off("dblclick", tipsyOn);
 
     var target = $(e.currentTarget),
         tText = "";
@@ -30,6 +29,11 @@ function tipsyOn(e) {
     } else if (document.selection && document.selection.type != "Control") {
         tText = document.selection.createRange().text;
     }
+
+    target.tipsy("hide").unbind().data("tipsy", "");
+
+    console.log(tText);
+
     target.tipsy({
         gravity: "n",
         html: true,
@@ -38,18 +42,22 @@ function tipsyOn(e) {
     });
 
     target.tipsy("show");
+    $(".tipsy").css("top", e.pageY).css("left", e.pageX);
 
     setTimeout(function(){
-        $(types).on("click", tipsyOff);
-    }, 175);
+        $(types).on("click", function(e) {
+            tipsyOff(e, target)
+        });
+    }, 100);
 }
 
-function tipsyOff(e) {
+function tipsyOff(e, target) {
     e.stopImmediatePropagation();
     $(types).off("click", tipsyOff);
-    $(".tipsy").remove();
+
+    target.tipsy("hide").unbind().data("tipsy", "");
+
     setTimeout(function() {
-        console.log("off");
-        $(types).off("mouseup").on("mouseup", tipsyOn);
-    }, 175);
+        $(types).off("dblclick").on("dblclick", tipsyOn);
+    }, 100);
 }
