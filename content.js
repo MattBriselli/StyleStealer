@@ -1,4 +1,4 @@
-var types = "div:not(.tipsy):not(.tipsy-inner):not(.tipsy-arrow), input, label, em, td, tr, span, a, p, h1, h2, h3";
+var types = "div:not(.tipsy):not(.tipsy-inner):not(.tipsy-arrow), ul, li, input, label, em, td, tr, span, a, p, h1, h2, h3";
 $(types).on("dblclick", tipsyOn);
 
 function tipsyOn(e) {
