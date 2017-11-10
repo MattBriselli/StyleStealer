@@ -17,29 +17,38 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-
-$("div, input, label").on("dblclick", function(e) {
-    var target = $(e.currentTarget),
-        tText = target.text();
-
-    if (tText.indexOf("\n") == -1) {
-
-        $.get("http://www.thesaurus.com/browse/"+tText)
-            .done(function(){
-                console.log(this)
-            });
-
-        geturl = $.ajax({
-            type: "GET",
-            url: 'http://www.thesaurus.com/browse/'+tText,
-            success: function () {
-                alert("done!"+ geturl.getAllResponseHeaders());
-            }
-        });
-        
-    }
-});
+var types = "div, input, label, em, td, tr, span, a, p, h1, h2, h3";
+tipsyOn();
 
 function tipsyOn() {
-    console.log(this.responseText);
+    $(types).on("mouseup", function(e) {
+        e.stopImmediatePropagation();
+        var target = $(e.currentTarget),
+            tText = "";
+
+        if (window.getSelection) {
+            tText = window.getSelection().toString();
+        } else if (document.selection && document.selection.type != "Control") {
+            tText = document.selection.createRange().text;
+        }
+        target.tipsy({
+            gravity: "n",
+            html: true,
+            fallback: tText,
+            trigger: "manual"
+        });
+
+        target.tipsy("show");
+
+        setTimeout(function() {
+            $(types).on("click", function() {
+                tipsyOff(target);
+            });
+        }, 500);
+    });
+}
+
+function tipsyOff(target) {
+    target.tipsy("hide").unbind().data("tipsy", "");
+    tipsyOn();
 }
